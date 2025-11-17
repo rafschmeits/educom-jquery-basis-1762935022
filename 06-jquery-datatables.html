@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Dynamic Table</title>
+
+      <link rel="stylesheet" href="//cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" /> 
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+      <script>
+        $(document).ready(function() {
+
+          // Init DataTable
+          const dTable = $("#theBeatles").DataTable({
+            ajax: "https://api.dev-master.ninja/js/beatles",
+            columns: [
+              { data: "id" },
+              { data: "firstname" },
+              { data: "lastname" },
+              { data: "dateOfBirth" },
+              { data: "email" }
+            ]
+          });
+
+          // Refresh table every 10 seconds
+          setInterval(() => dTable.ajax.reload(), 10000);
+
+          // Save person form
+          $("#personForm").on("submit", function(e) {
+            e.preventDefault();
+
+            $.post(
+              "https://api.dev-master.ninja/js/person/save",
+              {
+                firstname: $("#firstname").val(),
+                lastname: $("#lastname").val(),
+                email: $("#email").val()
+              },
+              function(response) {
+                console.log("Saved:", response);
+              }
+            );
+
+            this.reset();
+          });
+        });
+      </script>
+  </head>
+
+  <body>
+
+      <h2>Add Person</h2>
+      <form id="personForm">
+        <input type="text" id="firstname" placeholder="Firstname" required>
+        <input type="text" id="lastname" placeholder="Lastname" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <button type="submit">Save</button>
+      </form>
+
+      <hr>
+
+      <table id="theBeatles" class="display nowrap dataTable dtr-inline collapsed">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Date of Birth</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+  </body>
+</html>
